@@ -68,6 +68,7 @@ class Sensor:
         
         lon2 = lon1 + math.atan2(math.sin(initBearing)*math.cos(lat1),
                                  math.cos(delta)- math.sin(lat1)*math.sin(lat2))
+        
         return lat2, lon2
     
     def nameLocation(latitude, longitude):
