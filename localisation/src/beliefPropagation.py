@@ -13,17 +13,17 @@ G =  FactorGraph()
 nodes = ['a', 'y', 'x']
 G.add_nodes_from(nodes)
 
-ueFactor = DiscreteFactor(['a', 'x'], [2, 9], np.random.rand(18))
+ueFactor = DiscreteFactor(['a', 'x'], [2, 10], np.random.rand(20))
 net =  DiscreteFactor(['y'], [3], np.random.rand(3))
-pred = DiscreteFactor(['x','y'], [9, 3], np.random.rand(27))
+pred = DiscreteFactor(['x','y'], [10, 3], np.random.rand(30))
 
-limitsUE = [(-3,3), (-5,5)]
-cardinalityUE = [10, 10]
-meansUE = np.array([5, 5])
-covUE = np.array([[1, 0.5], [0.5, 1]])
+userEquipment = 3 + 2.5 * np.random.randn(1000)
+sensorValues= 100 - 5 * np.random.randn(1000)
 
-predUE = discretise(limitsUE, cardinalityUE, meansUE, covUE)
-ueDiscretisedFactor =  DiscreteFactor(['a', 'x'], [9,9], predUE)
+predUE = discretise(sensorValues, userEquipment, 10)
+predUETabularCPD = conditionalProbabilityTable(predUE)
+predUETabularCPD.shape
+ueDiscretisedFactor =  DiscreteFactor(['a', 'x'], [10,10], predUE)
 
 factors = [ueDiscretisedFactor, net, pred] 
 
