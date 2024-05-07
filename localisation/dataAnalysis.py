@@ -43,5 +43,4 @@ corr_matrix.replace([np.inf, -np.inf], 0, inplace=True)
 
 # Generate and display the cluster map
 sns.clustermap(corr_matrix, cmap="coolwarm", standard_scale=1)
-sns.pairplot(summary_stats, diag_kind='hist')
 plt.show()
