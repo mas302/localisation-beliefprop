@@ -20,7 +20,7 @@ x += ['user']
 userIDs = df['user'].unique().tolist()
 
 # Filter for walking activity and sort by user ID
-walking_df = df[df['activity'] == 'Walking'].sort_values('user')
+walking_df = df[df['activity'] == 'Inactive'].sort_values('user')
 
 # Group by users and aggregate data
 summary_stats = walking_df.groupby('user')[x].agg(['mean']) #, 'std'])
