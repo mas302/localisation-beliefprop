@@ -13,7 +13,7 @@ def conditionalProbabilityTable(hist):
     cpd = np.zeros((m,n)) 
 
     for i in range(m):
-        cpd[i,:] = hist[i,:]/ marginalVarOne[i]
+        cpd[i,:] = hist[i,:]/ (marginalVarOne[i]+ 0.000001)
 
     return cpd
 
@@ -27,6 +27,10 @@ def discretise3vars(mean, covariance, delta_lat_range, delta_lon_range, altitude
 
     sigma_cond = sigma_11 - sigma_12.dot(sigma_22_inv).dot(sigma_21)
 
+    if sigma_cond <= 0:
+        # print("Warning: Conditional variance is non-positive, which is invalid for normal distribution.")
+        return np.zeros((len(altitude_ranges), len(delta_lat_range), len(delta_lon_range)))
+
     prob_table = np.zeros((len(delta_lat_range), len(delta_lon_range), len(altitude_ranges)))
 
     for i, delta_lat in enumerate(delta_lat_range):
@@ -39,5 +43,16 @@ def discretise3vars(mean, covariance, delta_lat_range, delta_lon_range, altitude
                 upper_bound = alt + interval_width/2   
                 prob = norm.cdf(upper_bound, cond_mean, np.sqrt(sigma_cond)) - norm.cdf(lower_bound, cond_mean, np.sqrt(sigma_cond))
                 prob_table[i, j, k] = prob
+
+    # Normalize the probability table to ensure each "row" sums to 1
+    for j in range(len(delta_lat_range)):
+        for k in range(len(delta_lon_range)):
+            prob_sum = np.sum(prob_table[:, j, k])
+            if prob_sum > 0:
+                prob_table[:, j, k] /= prob_sum
+                # Debug: Print the sum of the probabilities to ensure normalization
+                # print(f"Normalized sum for slice [:, {j}, {k}]: {np.sum(prob_table[:, j, k])}")
+            # else:
+            #     print(f"Sum of probabilities for slice [:, {j}, {k}] is: {prob_sum}.")
     
     return prob_table
