@@ -27,61 +27,61 @@ std_lat = 0.006804
 std_lon = 0.011514 
 std_alt = 38.646093
 
-altitude_ranges1 = np.arange(mean1[0]-2*std_alt, mean1[0]+2*std_alt, 8)
-delta_lat_range1 = np.arange(mean1[1]-2*std_lat, mean1[1]+2*std_lat, 0.002) 
-delta_lon_range1 = np.arange(mean1[2]-2*std_lon, mean1[2]+2*std_lon, 0.003)
+altitude_ranges1 = np.arange(mean1[0]-2*std_alt, mean1[0]+2*std_alt, 16)
+delta_lat_range1 = np.arange(mean1[1]-2*std_lat, mean1[1]+2*std_lat, 0.003)
+delta_lon_range1 = np.arange(mean1[2]-2*std_lon, mean1[2]+2*std_lon, 0.005)
 
 prob_table = discretise3vars(mean1, covariance1, delta_lat_range1, delta_lon_range1, altitude_ranges1, 5)
 
-altLatLon =  DiscreteFactor(['del_lat', 'del_lon', 'alt'], [14,16,20], prob_table)
+altLatLon =  DiscreteFactor(['del_lat', 'del_lon', 'alt'], [10,10,10], prob_table)
 true_loc = 10 + np.random.randn(10000)
 est_loc = 10 + np.random.randn(10000)
 
 print("progress check1")
 
-predUELocation = discretise(est_loc, true_loc, 20)
+predUELocation = discretise(est_loc, true_loc, 10)
 predUETabularCPD = conditionalProbabilityTable(predUELocation)
-trueLocationFactor = DiscreteFactor(['true_loc', 'est_loc'], [20, 20], predUETabularCPD)
+trueLocationFactor = DiscreteFactor(['true_loc', 'est_loc'], [10, 10], predUETabularCPD)
 
 print("progress check2")
 
 alt = mean1[0] + (std_alt) *np.random.randn(10000)
-accuracyEstimation = discretise(est_loc, alt, 20)
+accuracyEstimation = discretise(est_loc, alt, 10)
 accuracyEstimationCPD = conditionalProbabilityTable(accuracyEstimation)
-accuracyEstFactor = DiscreteFactor(['est_loc', 'alt'], [20, 20], accuracyEstimationCPD)
+accuracyEstFactor = DiscreteFactor(['est_loc', 'alt'], [10, 10], accuracyEstimationCPD)
 
 mean2 = [34.785, 5.5, 10]
 covariance2 = [[1,1,1], [1,2,3], [1,4,5]]
 std_speed = 0.5
 std_bearing = 2
 
-speed_range = np.arange(mean2[1]-2*std_speed, mean2[1]+2*std_speed, 0.1) 
-bearing_range = np.arange(mean2[2]-2*std_bearing, mean2[2]+2*std_bearing, 0.4)
+speed_range = np.arange(mean2[1]-2*std_speed, mean2[1]+2*std_speed, 0.2) 
+bearing_range = np.arange(mean2[2]-2*std_bearing, mean2[2]+2*std_bearing, 0.8)
 
 prob_table_sb = discretise3vars(mean2, covariance2, speed_range, bearing_range, altitude_ranges1, 5)
-altSpeedBearing = DiscreteFactor(['alt', 's', 'b'], [20, 20, 20], prob_table_sb)
+altSpeedBearing = DiscreteFactor(['alt', 's', 'b'], [10, 10, 10], prob_table_sb)
 
 speed = mean2[1]+ np.random.randn(10000)*std_speed
 x_acc = 0.001 + np.random.randn(10000)*2
-speedXAcc = discretise(speed, x_acc, 20)
+speedXAcc = discretise(speed, x_acc, 10)
 speedXAccCPD = conditionalProbabilityTable(speedXAcc)
-speedXAccFac = DiscreteFactor(['s', 'x_acc'], [20,20], speedXAccCPD)
+speedXAccFac = DiscreteFactor(['s', 'x_acc'], [10,10], speedXAccCPD)
 
 print("progress check3")
 
 acc = 100 + 10 * np.random.randn(10000)
 lat =  mean1[1] + (std_lat**2) *np.random.randn(10000)
-latAccu = discretise(lat, acc, 14)
+latAccu = discretise(lat, acc, 10)
 latAccuCPD = conditionalProbabilityTable(latAccu)
-latAcc = DiscreteFactor(['del_lat', 'acc'], [14, 14], latAccuCPD)
+latAcc = DiscreteFactor(['del_lat', 'acc'], [10, 10], latAccuCPD)
 
 print("progress check4")
 
 lon = mean1[2] + (std_lon**2) *np.random.randn(10000)
 acc_dash = 50 + 10 * np.random.randn(10000)
-lonAccu = discretise(lon, acc_dash, 16)
+lonAccu = discretise(lon, acc_dash, 10)
 lonAccuracyCPD = conditionalProbabilityTable(lonAccu)
-lonAcc = DiscreteFactor(['del_lon', 'acc_dash'], [16,16], lonAccuracyCPD)
+lonAcc = DiscreteFactor(['del_lon', 'acc_dash'], [10,10], lonAccuracyCPD)
 
 print("progress check5")
 
@@ -101,10 +101,10 @@ print(G.check_model())
 G_spoofed = FactorGraph()
 
 # Spoofed scenario (est_loc biased away from true_loc)
-spoofed_est_loc = true_loc + 5 + np.random.randn(10000)
-spoofedUELocation = discretise(spoofed_est_loc, true_loc, 20)
+spoofed_est_loc = true_loc + np.random.randn(10000)
+spoofedUELocation = discretise(spoofed_est_loc, true_loc, 10)
 spoofedUETabularCPD = conditionalProbabilityTable(spoofedUELocation)
-spoofedLocationFactor = DiscreteFactor(['spoofed_loc', 'est_loc'], [20, 20], spoofedUELocation)
+spoofedLocationFactor = DiscreteFactor(['spoofed_loc', 'est_loc'], [10, 10], spoofedUELocation)
 
 G_spoofed.add_nodes_from(['spoofed_loc', 'est_loc', 'alt', 's', 'b', 'del_lat', 'del_lon', 'acc', 'acc_dash', 'x_acc'])
 G_spoofed.add_factors(spoofedLocationFactor, altLatLon, accuracyEstFactor, altSpeedBearing, latAcc, lonAcc, speedXAccFac)
@@ -124,11 +124,11 @@ bp_spoof = BeliefPropagation(G_spoofed)
 bp.calibrate()
 bp_spoof.calibrate()
 
-non_spoofed_mapEstimate = bp.map_query(variables=['est_loc'], show_progress=True, evidence={'true_loc': 10})
+non_spoofed_mapEstimate = bp.map_query(variables=['est_loc'], show_progress=True, evidence={'true_loc': 5})
 print(f"Non-spoofed MAP estimate: {non_spoofed_mapEstimate}")
 
 # Perform inference for spoofed scenario
-spoofed_mapEstimate = bp_spoof.map_query(variables=['spoofed_loc'], show_progress=True, evidence={'true_loc': 10})
+spoofed_mapEstimate = bp_spoof.map_query(variables=['spoofed_loc'], show_progress=True, evidence={'true_loc': 5})
 print(f"Spoofed MAP estimate: {spoofed_mapEstimate}")
 
 def map_evidence_to_state(evidence, bins):
@@ -138,7 +138,7 @@ def map_evidence_to_state(evidence, bins):
     return unique_states
 
 
-discrete_true_vals = map_evidence_to_state(true_loc, 20)
+discrete_true_vals = map_evidence_to_state(true_loc, 10)
 
 print("we're here")
 non_spoofed_samples = np.array([bp.map_query(variables=['est_loc'], evidence={'true_loc': val})['est_loc'] for val in discrete_true_vals])
@@ -155,7 +155,7 @@ spoofedQueryEst = bp_spoof.query(variables=['spoofed_loc'], show_progress=True)
 print(queryEst)
 print(queryEst.values)
 
-states = np.arange(20)
+states = np.arange(10)
 num_samples = 10000
 probabilities= queryEst.values
 probabilities_spoofed = spoofedQueryEst.values
@@ -169,53 +169,57 @@ original_values = np.linspace(state_min, state_max, len(states))
 sampled_values = original_values[samples]
 sampled_values_spoof = original_values[samplesSpoofed]
 
+spoof = np.linspace(11, 19, 10)
+nonspoof= np.linspace(8, 12, 10)
+print(nonspoof[3])
+
+print(np.mean(sampled_values), np.mean(sampled_values_spoof))
 # Scale the sampled values to match the known mean and standard deviation
-scaled_sampled_values = (sampled_values - sampled_values.mean()) / sampled_values.std() * 1 + 10
-scaled_sampled_values_spoofed = (sampled_values_spoof - sampled_values_spoof.mean()) / sampled_values_spoof.std() * 2 + 15
+scaled_sampled_values = (sampled_values - sampled_values.mean()) + nonspoof[3]
+scaled_sampled_values_spoofed = (sampled_values_spoof - sampled_values_spoof.mean()) + nonspoof[3]
 
 # Compute the mean and standard deviation of the scaled sampled array
-mean = np.mean(scaled_sampled_values)
-std_dev = np.std(scaled_sampled_values)
-meanS = np.mean(scaled_sampled_values_spoofed)
-std_devS = np.std(scaled_sampled_values_spoofed)
+# mean = np.mean(scaled_sampled_values)
+# std_dev = np.std(scaled_sampled_values)
+# meanS = np.mean(scaled_sampled_values_spoofed)
+# std_devS = np.std(scaled_sampled_values_spoofed)
 
 print(f"Sampled Values: {scaled_sampled_values[:10]}...")  # Display first 10 samples for verification
-print(f"Mean of the scaled sampled array: {mean}, {meanS}")
-print(f"Standard deviation of the scaled sampled array: {std_dev}, {std_devS}")
+# print(f"Mean of the scaled sampled array: {mean}, {meanS}")
+# print(f"Standard deviation of the scaled sampled array: {std_dev}, {std_devS}")
 
 # Plot non-spoofed results
-# fig, axes = plt.subplots(1, 3, figsize= (7,5), sharex='all')
-# x = np.linspace(0,20,20)
+fig, axes = plt.subplots(1, 2, figsize= (7,5), sharey = 'all')
+x = np.linspace(0,10,10)
 # axes[0].plot(x, non_spoofed_samples, label='Non-Spoofed estimate')
 # axes[0].plot(x, spoofed_samples,label='Spoofed estimate')
 # axes[0].set_ylim(bottom=0)
 # axes[0].set_xlabel('States')
 # axes[0].set_ylabel('MAP estimate')
+print(np.std(sampled_values), np.std(sampled_values_spoof))
 
-# axes[1].hist(scaled_sampled_values, alpha=0.5, density=True, label=f'True Location, mean={round(mean)}')
-# axes[1].hist(scaled_sampled_values_spoofed, alpha=0.5, density=True, label=f'Spoofed Location, mean={meanS}')
-# x2 = np.linspace(0, 10000, 10000).T
-# print(scipy.special.kl_div(scaled_sampled_values, scaled_sampled_values_spoofed).size)
+axes[0].hist(scaled_sampled_values, alpha=0.5, density=True, label=f'True Location: {round(nonspoof[3], 2)}')
+axes[0].hist(scaled_sampled_values_spoofed, alpha=0.5, density=True, label=f'Non-Spoofed Location: {round(nonspoof[3], 2)}')
+axes[0].set_ylabel('Marginal Probability')
+x2 = np.linspace(0, 10000, 10000).T
+print(scipy.special.kl_div(sampled_values, sampled_values_spoof).size)
 
-# from scipy.signal import savgol_filter
-# y= scipy.special.kl_div(probabilities,probabilities_spoofed)
-# yhat = savgol_filter(y, 20, 2)
+from scipy.signal import savgol_filter
+y= scipy.special.rel_entr(probabilities,probabilities_spoofed)
+yhat = savgol_filter(y, 10, 2)
 
-# y_smooth = uniform_filter1d(y,size=3)
-# axes[2].plot(x, y_smooth)
-# axes[2].set_xlabel('States')
-# axes[2].set_ylabel('Smoothed KL-Divergence')
-# fig.legend()
-# fig.tight_layout()
-
-# plt.show()
-print(sklearn.metrics.mean_squared_error(probabilities,probabilities_spoofed))
+y_smooth = uniform_filter1d(y,size=3)
+axes[1].hist(scaled_sampled_values-scaled_sampled_values_spoofed, density=True, label=f'Error', alpha=0.5, color = 'red')
+axes[1].set_ylabel('Error (spoofed-true)')
+fig.supxlabel('Values')
+fig.legend()
+plt.show()
 
 # fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 7))
 mapestimates = np.zeros((20,10))
 
-# # # Generate an array of 10 random numbers from a normal distribution with mean 0 and standard deviation 1
-# seeds = np.random.randint(1, 100, size=20)
+# Generate an array of 10 random numbers from a normal distribution with mean 0 and standard deviation 1
+seeds = np.random.randint(1, 100, size=20)
 
 # for i in range(20):
 #     for j in range(10):
@@ -339,28 +343,28 @@ mapestimates = np.zeros((20,10))
 # plt.legend()
 # plt.show()
 
-if __name__ == '__main__':
-    # Print the structure of the Graph to verify its correctness.
-    plt.figure(figsize=(10, 3))
-    top = {team: (i * 2, 0) for i, team in enumerate(nodes)}
-    bottom = {factor: (i, 1) for i, factor in enumerate(factors)}
-    # Draw all the variables & factors with their edges.
-    nx.draw(
-    G,
-    pos={**top, **bottom},
-    edge_color="red",)
+# if __name__ == '__main__':
+#     # Print the structure of the Graph to verify its correctness.
+#     plt.figure(figsize=(10, 3))
+#     top = {team: (i * 2, 0) for i, team in enumerate(nodes)}
+#     bottom = {factor: (i, 1) for i, factor in enumerate(factors)}
+#     # Draw all the variables & factors with their edges.
+#     nx.draw(
+#     G,
+#     pos={**top, **bottom},
+#     edge_color="red",)
     
-    # Draw text labels for the factors above their nodes in the graph.
-    label_dict = {factor: "{" + ",\n".join(factor.scope()) + "}" for factor in G.factors}
-    for node, (x, y) in bottom.items():
-        plt.text(x, y * 1.2, label_dict[node], fontsize=10, ha="center", va="center")
+#     # Draw text labels for the factors above their nodes in the graph.
+#     label_dict = {factor: "{" + ",\n".join(factor.scope()) + "}" for factor in G.factors}
+#     for node, (x, y) in bottom.items():
+#         plt.text(x, y * 1.2, label_dict[node], fontsize=10, ha="center", va="center")
     
-    # Re-draw the variables but with labels this time and colored orange.
-    nx.draw(
-        G.subgraph(nodes),
-        node_color="orange",
-        pos={**top},
-        with_labels=True,)
+#     # Re-draw the variables but with labels this time and colored orange.
+#     nx.draw(
+#         G.subgraph(nodes),
+#         node_color="orange",
+#         pos={**top},
+#         with_labels=True,)
     
-    plt.show()
+#     plt.show()
 
