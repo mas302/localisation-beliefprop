@@ -215,156 +215,28 @@ fig.supxlabel('Values')
 fig.legend()
 plt.show()
 
-# fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 7))
-mapestimates = np.zeros((20,10))
-
-# Generate an array of 10 random numbers from a normal distribution with mean 0 and standard deviation 1
-seeds = np.random.randint(1, 100, size=20)
-
-# for i in range(20):
-#     for j in range(10):
-#         np.random.seed(seeds[i])
-#         mapest = bp.map_query(variables=['est_loc'], show_progress=True, evidence = {'alt': i})
-#         mapestimates[i][j] = list(mapest.values())[0]
-        
-# mean = np.mean(mapestimates, axis=1)
-# std_dev= np.std(mapestimates, axis=1)
-# print(std_dev)
-# axes[0].plot(mean)
-# # axes[0].fill_between(np.linspace(0,20,20), mean-2*std_dev, mean+2*std_dev, alpha=0.5, color = 'orange')
-# axes[0].set_ylim(bottom=0)
-# axes[0].set_title('MAP state choice')
-
-# axes[1].hist(mapestimates.reshape(-1), bins='auto', density=True)
-# axes[1].set_title('MAP "EST" state histogram')
-# fig.supxlabel('"NET" state evidence')
-# fig.supylabel('"EST" estimated state')
-# plt.legend()
-# plt.show()
+if __name__ == '__main__':
+    # Print the structure of the Graph to verify its correctness.
+    plt.figure(figsize=(10, 3))
+    top = {team: (i * 2, 0) for i, team in enumerate(nodes)}
+    bottom = {factor: (i, 1) for i, factor in enumerate(factors)}
+    # Draw all the variables & factors with their edges.
+    nx.draw(
+    G,
+    pos={**top, **bottom},
+    edge_color="red",)
     
-# plt.scatter(np.linspace(0,20,20), mapestimates)
-
-# map_states = bp.map_query(variables=['alt', 's', 'b', 'del_lat', 'del_lon'], show_progress=True)
-# queryEst = bp.query(variables=['est_loc', 'true_loc'], show_progress=True, evidence = map_states)
-# # mapEstimate2 = bp.map_query(variables=['est_loc'], show_progress=True, evidence = {'true_loc':19})
-# # mapEstimate3 = bp.map_query(variables=['est_loc'], show_progress=True, evidence = {'true_loc':10})
-# ME_samp = queryEst.sample(100000)
-# # ME_samp2 = mapEstimate2.sample(100000)
-# # ME_samp3 = mapEstimate3.sample(100000)
-# diff2 =  ME_samp.est_loc - ME_samp.true_loc
-# # print(np.sum(scipy.special.kl_div(ME_samp.est_loc, ME_samp.true_loc)))
-
-# ME_samp.est_loc.hist(
-#     alpha=0.3,
-#     label=f"Estimated Location, AVG={ME_samp.est_loc.mean()}",
-#     density=True,
-# )
-
-# ME_samp.true_loc.hist(
-#     alpha=0.3,
-#     label=f"True Location, AVG={ME_samp.true_loc.mean()}",
-#     density=True,
-# )
-
-# diff3.hist(
-#     alpha=0.3,
-#     label=f"Estimated Location, AVG={diff2.mean()}",
-#     density=True,
-# )
-# plt.ylabel('Marginal Probability')
-# plt.xlabel('States')
-# plt.legend()
-# plt.show()
-
-# y = scipy.special.kl_div(diff, diff2)
-
-# Compare a larger clique against the true marginals.
-
-# # true_loc_marginal = observed_factor_dict[("visitorTeamAbbr",)]
-# total_states = len(true_loc)
-# axes[0].bar(
-#     range(total_states),
-#     true_loc.values.flatten(),
-# )
-
-# axes[0].set_title("Observed Marginals")
-# axes[0].bar(
-#     range(20),
-#     trueLocationFactor.marginalize(
-#         ['true_loc'], inplace=False
-#     ).values.flatten(),
-# )
-# axes[1].bar(
-#     range(20),
-#     trueLocationFactor.marginalize(
-#         ['est_loc'], inplace=False
-#     ).values.flatten(),
-# )
-# axes[2].bar(
-#     range(20),
-#     altLatLon.marginalize(
-#         ['alt', 'del_lat', 'del_lon'], inplace=False
-#     ).values.flatten(),
-# )
-# axes[3].bar(
-#     range(20),
-#     altSpeedBearing.marginalize(
-#         ['s', 'b'], inplace=False
-#     ).values.flatten(),
-# )
-# axes[0].set_title("Marginalised 'true_loc'")
-# axes[1].set_title("Marginalised 'est_loc'")
-# axes[2].set_title("Marginalised 'alt'")
-# axes[3].set_title("Marginalised 'alt', speed, bearing")
-# plt.show()
-
-
-
-# trueEstimate = bp.query(['true_loc'], show_progress=True)
-# print(mapEstimate)
-
-# estimateSampled, _ = np.histogram(mapEstimate.sample(1_000_000))
-# trueSampled, _= np.histogram(trueEstimate.sample(1_000_000))
-# print(scipy.special.rel_entr(estimateSampled, trueSampled))
-# print(estimateSampled)
-# print(trueSampled)
-# print(scipy.special.rel_entr(estimateSampled, trueSampled))
-# plt.hist(estimateSampled,
-#     alpha=0.3,
-#     label=f"Estimated Location, bins=30 AVG={estimateSampled.mean()}",
-#     density=True,
-# )
-# plt.hist(trueSampled,
-#     alpha=0.3,
-#     label=f"Estimated Location, bins=30 AVG={trueSampled.mean()}",
-#     density=True,
-# )
-
-# plt.legend()
-# plt.show()
-
-# if __name__ == '__main__':
-#     # Print the structure of the Graph to verify its correctness.
-#     plt.figure(figsize=(10, 3))
-#     top = {team: (i * 2, 0) for i, team in enumerate(nodes)}
-#     bottom = {factor: (i, 1) for i, factor in enumerate(factors)}
-#     # Draw all the variables & factors with their edges.
-#     nx.draw(
-#     G,
-#     pos={**top, **bottom},
-#     edge_color="red",)
+    # Draw text labels for the factors above their nodes in the graph.
+    label_dict = {factor: "{" + ",\n".join(factor.scope()) + "}" for factor in G.factors}
+    for node, (x, y) in bottom.items():
+        plt.text(x, y * 1.2, label_dict[node], fontsize=10, ha="center", va="center")
     
-#     # Draw text labels for the factors above their nodes in the graph.
-#     label_dict = {factor: "{" + ",\n".join(factor.scope()) + "}" for factor in G.factors}
-#     for node, (x, y) in bottom.items():
-#         plt.text(x, y * 1.2, label_dict[node], fontsize=10, ha="center", va="center")
+    # Re-draw the variables but with labels this time and colored orange.
+    nx.draw(
+        G.subgraph(nodes),
+        node_color="orange",
+        pos={**top},
+        with_labels=True,)
     
-#     # Re-draw the variables but with labels this time and colored orange.
-#     nx.draw(
-#         G.subgraph(nodes),
-#         node_color="orange",
-#         pos={**top},
-#         with_labels=True,)
-    
-#     plt.show()
+    plt.show()
 
