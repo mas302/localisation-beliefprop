@@ -23,7 +23,7 @@ random.seed(0)
 columns = df.columns.values.tolist()
 columnsAsStr = ' '.join(columns)
 x = re.findall("gps+_[A-Za-z0-9]+_mean", columnsAsStr)
-# x += re.findall("acc+_[A-Za-z0-9]+_mean", columnsAsStr)
+x += re.findall("acc+_[A-Za-z0-9]+_mean", columnsAsStr)
 x += ['activity']
 
 # Extract unique user IDs
@@ -31,19 +31,20 @@ userIDs = df['user'].unique().tolist()
 
 parameters = df[x]
 encodedParameters = pd.get_dummies(parameters, dtype=float)
-encodedParameters.drop(['activity_Walking', 'activity_Driving', 'gps_lat_mean', 'gps_bearing_mean'], axis=1, inplace=True)
+
+# encodedParameters.drop(['acc_ys_mean', 'gps_lat_mean', 'gps_bearing_mean'], axis=1, inplace=True)
 
 rowCount = encodedParameters.shape[0]
 midRows = math.ceil((rowCount-1)/2)
 
 # know that a user id and activity defines a session. take haversine distances of time series for consistent behaviour.
 encodedParameters['networkLat'] = np.nan
-encodedParameters['networkLat'][:midRows] = df['gps_lat_mean'][:midRows]
-encodedParameters['networkLat'][midRows:rowCount] = df['gps_lat_mean'][midRows:rowCount] + 1e-3*np.random.randn(rowCount- midRows)
+encodedParameters['networkLat'][:midRows] = df['gps_lat_mean'][:midRows] + 0.001*np.random.randn(midRows)
+encodedParameters['networkLat'][midRows:rowCount] = df['gps_lat_mean'][midRows:rowCount] + 0.01*np.ones(rowCount- midRows)
 
 encodedParameters['networkLon'] = np.nan
-encodedParameters['networkLon'][:midRows] = df['gps_long_mean'][:midRows]
-encodedParameters['networkLon'][midRows:rowCount] = df['gps_long_mean'][midRows:rowCount] + 1e-3*np.random.randn(rowCount- midRows)
+encodedParameters['networkLon'][:midRows] = df['gps_long_mean'][:midRows] + 0.001*np.random.randn(midRows)
+encodedParameters['networkLon'][midRows:rowCount] = df['gps_long_mean'][midRows:rowCount] + 0.01*np.ones(rowCount- midRows)
 
 encodedParameters['targetVal'] = np.nan
 encodedParameters['targetVal'][:midRows] = np.ones((midRows))#df['gps_long_mean'][:500]
